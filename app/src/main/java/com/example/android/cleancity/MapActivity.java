@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -15,6 +16,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -22,6 +26,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +45,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private static int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private GoogleMap mMap;
 
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
         Canvas canvas = new Canvas();
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -46,6 +54,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         drawable.draw(canvas);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
+
+    private void getDeviceLocation(){
+        Log.d(TAG, "getDeviceLocation: getting the current device location");
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        try{
+            if(mLocationPermissionGranted){
+                Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if(task.isSuccessful()){
+                            Log.d(TAG, "onComplete: got the location");
+                            Location currentLocation = (Location)task.getResult();
+                            LatLng latLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            float zoom = 15f;
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
+                        }
+                        else{
+                            Log.d(TAG, "onComplete: current location is null");
+                            Toast.makeText(MapActivity.this, "Couldn't find the current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        }catch(SecurityException e){
+            Log.d(TAG, "getDeviceLocation: SecurityException: " + e.getMessage());
+        }
     }
 
     private void markerAdder(GoogleMap googleMap, long id, long level, long area,
@@ -89,6 +125,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "onMapReady: Map is ready here");
         mMap = googleMap;
         addingFirebaseData(mMap);
+        getDeviceLocation();
     }
 
     @Override
