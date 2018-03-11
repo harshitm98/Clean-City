@@ -6,15 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.cleancity.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Clean City"/>
-
     <Button
         android:id="@+id/map_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="120dp"
         android:text="View Map" />
 
 

@@ -3,6 +3,7 @@ package com.example.android.cleancity;
 import android.*;
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,6 +15,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -25,6 +28,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -34,7 +39,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+import static com.google.android.gms.maps.GoogleMap.*;
+
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback,OnMarkerClickListener {
 
     private static final String TAG = "MapActivity";
 
@@ -124,13 +131,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Toast.makeText(this,"Map is ready",Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onMapReady: Map is ready here");
         mMap = googleMap;
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.google_maps_style));
+
+            if (!success) {
+                Log.e("MapsActivityRaw", "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e("MapsActivityRaw", "Can't find style.", e);
+        }
+        mMap.setOnMarkerClickListener((OnMarkerClickListener)this);
+        mMap.setOnMapClickListener(new OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d(TAG, "onMapClick: Map clicked");
+            }
+        });
         addingFirebaseData(mMap);
         getDeviceLocation();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);//Remove title bar
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_map);
         getLocationPermission();
     }
@@ -218,5 +246,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         });
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.d(TAG, "onMarkerClick: " + marker.getTitle());
+        return false;
     }
 }
