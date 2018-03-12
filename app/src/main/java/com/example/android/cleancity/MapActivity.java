@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.support.annotation.NonNull;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -106,7 +108,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng( longitude,latitude))
                     .title("Dustbin: " + id)
-                    .snippet("Area: " + area + ", 50% or less filled")
                     .icon(markerIcon));
         }
         else if(level == 2){
@@ -116,7 +117,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng( longitude,latitude))
                     .title("Dustbin: " + id)
-                    .snippet("Area: " + area + ", 75% filled")
                     .icon(markerIcon));
         }
         else if(level == 3){
@@ -126,7 +126,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng( longitude,latitude))
                     .title("Dustbin: " + id)
-                    .snippet("Area: " + area + ", 100% filled")
                     .icon(markerIcon));
         }
 
@@ -174,6 +173,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "initMap: Initializing the map");
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
+        Button newButton = findViewById(R.id.make_toast);
+        newButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MapActivity.this, "Your complaint has been reported!", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getLocationPermission(){
@@ -260,6 +266,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "onMarkerClick: " + marker.getTitle());
         cardView = findViewById(R.id.card_view);
         cardView.setVisibility(View.VISIBLE);
+
         final TextView percentage, area, id, rateCard;
         final double[] rate = new double[1];
         final RatingBar ratingBar = findViewById(R.id.rating_card);
@@ -267,6 +274,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         percentage = findViewById(R.id.percentage_card);
         area = findViewById(R.id.area_card);
         id = findViewById(R.id.id_card);
+
         final String id_s = marker.getTitle().substring(9);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         //String path = "d" + marker.getTitle().substring(1,7) + marker.getTitle().substring(9);

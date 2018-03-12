@@ -40,6 +40,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/test0"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Percent full"
@@ -63,6 +64,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20sp"
                         android:textSize="14sp"
+                        android:id="@+id/test1"
                         android:text="Dustbin ID"/>
                     <TextView
                         android:layout_width="match_parent"
@@ -71,6 +73,7 @@
                         android:textSize="25dp"
                         tools:text="2"/>
                     <TextView
+                        android:id="@+id/test2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
@@ -119,6 +122,7 @@
                         android:theme="@style/RatingBar"/>
                 </LinearLayout>
                 <Button
+                    android:id="@+id/make_toast"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
