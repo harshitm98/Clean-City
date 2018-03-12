@@ -9,5 +9,9 @@
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#c6c5bc</item>
+        <item name="colorControlActivated">#fce93a</item>"
+    </style>
 
 </resources>

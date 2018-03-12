@@ -2,6 +2,7 @@ package com.example.android.cleancity;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,10 +18,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
+    private CountDownTimer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         if(isServicesOK()){
             init();
@@ -28,14 +31,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init(){
-        Button mapBtn = findViewById(R.id.map_btn);
-        mapBtn.setOnClickListener(new View.OnClickListener() {
+        timer = new CountDownTimer(3000,1000) {
             @Override
-            public void onClick(View view) {
+            public void onTick(long l) {
+            }
+
+            @Override
+            public void onFinish() {
                 Intent mapIntent = new Intent(MainActivity.this, MapActivity.class);
                 startActivity(mapIntent);
+                finish();
             }
-        });
+        };
+        timer.start();
     }
     public boolean isServicesOK(){
         Log.d(TAG, "isServicesOK: Checking google services version");

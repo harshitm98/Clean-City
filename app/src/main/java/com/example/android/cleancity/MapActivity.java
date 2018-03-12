@@ -14,9 +14,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,6 +42,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import static com.google.android.gms.maps.GoogleMap.*;
 
@@ -53,6 +58,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
+    private CardView cardView;
 
     private BitmapDescriptor getMarkerIconFromDrawable(Drawable drawable) {
         Canvas canvas = new Canvas();
@@ -149,6 +155,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onMapClick(LatLng latLng) {
                 Log.d(TAG, "onMapClick: Map clicked");
+                cardView.setVisibility(View.GONE);
             }
         });
         addingFirebaseData(mMap);
@@ -251,6 +258,66 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: " + marker.getTitle());
+        cardView = findViewById(R.id.card_view);
+        cardView.setVisibility(View.VISIBLE);
+        final TextView percentage, area, id, rateCard;
+        final double[] rate = new double[1];
+        final RatingBar ratingBar = findViewById(R.id.rating_card);
+        rateCard = findViewById(R.id.rate_card);
+        percentage = findViewById(R.id.percentage_card);
+        area = findViewById(R.id.area_card);
+        id = findViewById(R.id.id_card);
+        final String id_s = marker.getTitle().substring(9);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //String path = "d" + marker.getTitle().substring(1,7) + marker.getTitle().substring(9);
+        DatabaseReference reference = database.getReference("dusbins");
+        reference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                if(id_s.equals(dataSnapshot.child("id").getValue().toString())){
+                    long p = (Long)dataSnapshot.child("level").getValue();
+                    if(p == 1){
+                        percentage.setTextSize(72);
+                        percentage.setText("50%");
+                    }
+                    else if(p == 2){
+                        percentage.setTextSize(72);
+                        percentage.setText("75%");
+                    }
+                    else if (p == 3) {
+                        percentage.setTextSize(65);
+                        percentage.setText("100%");
+                    }
+                    area.setText(dataSnapshot.child("area").getValue().toString());
+                    id.setText(dataSnapshot.child("id").getValue().toString());
+                    ratingBar.setRating(Float.valueOf(dataSnapshot.child("rate").getValue().toString()));
+                    rateCard.setText(dataSnapshot.child("rate").getValue().toString());
+                    Log.d(TAG, "onChildAdded: " + dataSnapshot.getValue().toString());
+                }
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         return false;
     }
 }
