@@ -173,6 +173,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Log.d(TAG, "initMap: Initializing the map");
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(MapActivity.this);
+        cardView = findViewById(R.id.card_view);
         Button newButton = findViewById(R.id.make_toast);
         newButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -264,7 +265,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     public boolean onMarkerClick(Marker marker) {
         Log.d(TAG, "onMarkerClick: " + marker.getTitle());
-        cardView = findViewById(R.id.card_view);
         cardView.setVisibility(View.VISIBLE);
 
         final TextView percentage, area, id, rateCard;
