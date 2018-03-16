@@ -1,5 +1,5 @@
 # App-CleanCity
-Android app of an IoT based project. We have tried to enhance the already followed system for timely collection of garbage from the dustbin. This project was presented on Code2Create'18. 
+Android app of an IoT based project. We have tried to enhance the already followed system for timely collection of garbage from the dustbin. This project was presented in Code2Create'18. 
 
 ## Screenshots
 <p>
